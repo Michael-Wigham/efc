@@ -1,0 +1,92 @@
+menu "EFC Configuration"
+    # Only ESP32 and ESP32S3 are tested with
+    depends on IDF_TARGET_ESP32 || IDF_TARGET_ESP32S3
+
+    config EFC_DRIVERS_ENABLED
+        bool "Enable EFC Drivers"
+        default 0
+        help
+            Select this option to enable EFC Flash Control.
+
+    menu "EFC Drivers"
+
+        config EFC_DRIVER_FLASH_ENABLED
+            depends on EFC_DRIVERS_ENABLED
+            bool "EFC Flash"
+            default 0
+            help
+                Select this option to enable EFC Flash Control.
+
+        menuconfig EFC_DRIVER_I2C_ENABLED
+            depends on SOC_I2C_SUPPORTED && EFC_DRIVERS_ENABLED
+            bool "EFC I2C"
+            default 0
+            help
+                Select this option to enable EFC I2C Control.
+
+        config EFC_DRIVER_I2C_SDA
+            depends on EFC_DRIVER_I2C_ENABLED
+            int "EFC I2C SDA GPIO num"
+            range 1 SOC_GPIO_PIN_COUNT
+            default 8 if  IDF_TARGET_ESP32S3
+            default 21 if IDF_TARGET_ESP32
+            help
+                GPIO number for I2C data line.
+
+        config EFC_DRIVER_I2C_SCL
+            depends on EFC_DRIVER_I2C_ENABLED
+            int "EFC I2C SCL GPIO num"
+            range 1 SOC_GPIO_PIN_COUNT
+            default 9 if  IDF_TARGET_ESP32S3
+            default 22 if IDF_TARGET_ESP32
+            help
+                GPIO number for I2C clock line.
+
+        config EFC_DRIVER_I2C_PORT_NUM
+            depends on EFC_DRIVER_I2C_ENABLED
+            int "EFC I2C Port Number"
+            default 0
+            help
+                Port number for I2C device.
+
+        config EFC_DRIVER_I2C_FREQUENCY
+            depends on EFC_DRIVER_I2C_ENABLED
+            int "EFC I2C Frequency"
+            default 100000
+            help
+                I2C Speed of device.
+
+        config EFC_DRIVER_PWM_ENABLED
+            depends on SOC_MCPWM_SUPPORTED && EFC_DRIVERS_ENABLED
+            bool "EFC PWM"
+            default 0
+            help
+                Select this option to enable EFC PWM Control
+
+        config EFC_DRIVER_UART_ENABLED
+            depends on SOC_UART_SUPPORTED && EFC_DRIVERS_ENABLED
+            bool "EFC UART"
+            default 0
+            help
+                Select this option to enable EFC UART Control
+
+    endmenu
+
+    menu "EFC Devices"
+
+        config EFC_DEVICES_LSM6DSOWTR_ENABLED
+        depends on EFC_DRIVER_I2C_ENABLED
+        bool "LSM6DSOWTR"
+        default 0
+        help
+            Select this option to use LSM6DSOWTR
+
+        config EFC_DEVICES_LSM6DSOWTR_SLAVE_ADDRESS
+        depends on EFC_DEVICES_LSM6DSOWTR_ENABLED
+        hex "LSM6DSOWTR I2C Address"
+        default 0x6B
+        help
+            Select this option to use LSM6DSOWTR
+
+    endmenu
+endmenu
