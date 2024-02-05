@@ -10,6 +10,15 @@ if(CONFIG_EFC_DRIVER_FLASH_ENABLED)
     )
 endif()
 
+if(CONFIG_EFC_DRIVER_GPIO_ENABLED)
+    list(APPEND EFC_SRCS
+        "efc_drivers/gpio/gpio.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "efc_drivers/gpio/include"
+    )
+endif()
+
 if(CONFIG_EFC_DRIVER_I2C_ENABLED)
     list(APPEND EFC_SRCS
         "efc_drivers/i2c/i2c_controller.cpp"
@@ -37,6 +46,15 @@ if(CONFIG_EFC_DRIVER_UART_ENABLED)
     )
 endif()
 
+if(CONFIG_EFC_DEVICES_HCSR04_ENABLED)
+    list(APPEND EFC_SRCS
+        "devices/HCSR04/HCSR04.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "devices/HCSR04/include"
+    )
+endif()
+
 if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
     list(APPEND EFC_SRCS
         "devices/lsm6dsowtr/lsm6dsowtr.cpp"
@@ -50,5 +68,5 @@ idf_component_register(
     SRCS ${EFC_SRCS}
     INCLUDE_DIRS ${EFC_INCLUDE_DIRS}
     REQUIRES driver
-    PRIV_REQUIRES driver esp_partition
+    PRIV_REQUIRES driver esp_partition esp_timer
 )

@@ -17,6 +17,13 @@ menu "EFC Configuration"
             help
                 Select this option to enable EFC Flash Control.
 
+        config EFC_DRIVER_GPIO_ENABLED
+            depends on EFC_DRIVERS_ENABLED
+            bool "EFC GPIO"
+            default 0
+            help
+                Select this option to enable EFC GPIO.
+
         menuconfig EFC_DRIVER_I2C_ENABLED
             depends on SOC_I2C_SUPPORTED && EFC_DRIVERS_ENABLED
             bool "EFC I2C"
@@ -87,6 +94,13 @@ menu "EFC Configuration"
         default 0x6B
         help
             Select this option to use LSM6DSOWTR
+
+        config EFC_DEVICES_HCSR04_ENABLED
+        depends on EFC_DRIVER_GPIO_ENABLED
+        bool "HCSR04"
+        default 0
+        help
+            Select this option to use HCSR04
 
     endmenu
 endmenu
