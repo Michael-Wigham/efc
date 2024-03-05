@@ -1,6 +1,13 @@
 set(EFC_SRCS)
 set(EFC_INCLUDE_DIRS)
 
+list(APPEND EFC_SRCS
+    "efc_common/common.cpp"
+)
+list(APPEND EFC_INCLUDE_DIRS
+    "efc_common/include"
+)
+
 if(CONFIG_EFC_DRIVER_FLASH_ENABLED)
     list(APPEND EFC_SRCS
         "efc_drivers/flash/flash_controller.cpp"
@@ -61,6 +68,15 @@ if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
     )
     list(APPEND EFC_INCLUDE_DIRS
         "devices/lsm6dsowtr/include"
+    )
+endif()
+
+if(CONFIG_EFC_DEVICES_TCS3472X_ENABLED)
+    list(APPEND EFC_SRCS
+        "devices/TCS3472X/TCS3472X.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "devices/TCS3472X/include"
     )
 endif()
 

@@ -102,5 +102,12 @@ menu "EFC Configuration"
         help
             Select this option to use HCSR04
 
+        config EFC_DEVICES_TCS3472X_ENABLED
+        depends on EFC_DRIVER_I2C_ENABLED
+        bool "TCS3472X"
+        default 0
+        help
+            Select this option to use TCS3472X
+
     endmenu
 endmenu

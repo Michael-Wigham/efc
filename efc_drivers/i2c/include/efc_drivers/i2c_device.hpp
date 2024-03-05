@@ -100,8 +100,12 @@ public:
         return true;
     }
 
+    uint8_t getDeviceAddress() {
+        return m_device_address;
+    }
+
 private:
-    uint8_t m_device_address;
+    uint8_t m_device_address = 0x00;
     std::shared_ptr<I2CController> m_controller = nullptr;
 };
 
