@@ -10,6 +10,14 @@ menu "EFC Configuration"
 
     menu "EFC Drivers"
 
+        config EFC_DRIVER_ADC_ENABLED
+            depends on EFC_DRIVERS_ENABLED
+            depends on SOC_ADC_SUPPORTED
+            bool "EFC ADC"
+            default 0
+            help
+                Select this option to enable EFC ADC.
+
         config EFC_DRIVER_FLASH_ENABLED
             depends on EFC_DRIVERS_ENABLED
             bool "EFC Flash"

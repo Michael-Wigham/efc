@@ -19,7 +19,7 @@ public:
         m_controller = I2CController::get_i2c_controller(sda_pin, scl_pin, port, frequency);
     }
 
-    I2CDevice(uint8_t device_address, std::shared_ptr<I2CController> i2c_controller) : m_device_address(device_address) {
+    I2CDevice(uint8_t device_address, I2CController *i2c_controller) : m_device_address(device_address) {
         m_controller = i2c_controller;
     }
 
@@ -106,7 +106,7 @@ public:
 
 private:
     uint8_t m_device_address = 0x00;
-    std::shared_ptr<I2CController> m_controller = nullptr;
+    I2CController *m_controller = nullptr;
 };
 
 #endif // ifndef EFC_I2C_DEVICE_HPP

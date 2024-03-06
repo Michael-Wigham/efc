@@ -33,7 +33,11 @@ I2CController::I2CController(uint8_t sda_pin, uint8_t scl_pin, i2c_port_t port, 
     };
 }
 
-std::shared_ptr<I2CController> I2CController::get_i2c_controller(uint8_t sda_pin, uint8_t scl_pin, i2c_port_t port, uint32_t frequency) {
+I2CController::~I2CController() {
+    i2c_driver_delete(m_port);
+}
+
+I2CController *I2CController::get_i2c_controller(uint8_t sda_pin, uint8_t scl_pin, i2c_port_t port, uint32_t frequency) {
     if (port < I2C_NUM_0 || port >= I2C_NUM_MAX) {
         ESP_LOGE("I2C Controller", "Invalid port provided");
         return nullptr;
@@ -71,14 +75,14 @@ std::shared_ptr<I2CController> I2CController::get_i2c_controller(uint8_t sda_pin
             }
             else {
                 ESP_LOGI("I2C Controller", "Port selected taken, using i2c port %d", available_port);
-                m_instances[available_port] = std::make_shared<I2CController>(I2CController(sda_pin, scl_pin, (i2c_port_t)available_port, frequency));
+                m_instances[available_port] = new I2CController(sda_pin, scl_pin, (i2c_port_t)available_port, frequency);
                 return m_instances[available_port];
             }
         }
         ESP_LOGI("I2C Controller", "Failed to get a controller");
         return nullptr;
     } else {
-        m_instances[port] = std::make_shared<I2CController>(I2CController(sda_pin, scl_pin, port, frequency));
+        m_instances[port] = new I2CController(sda_pin, scl_pin, port, frequency);
         return m_instances[port];
     }
 }

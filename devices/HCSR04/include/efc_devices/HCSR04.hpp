@@ -12,6 +12,8 @@
 
 #include <efc_drivers/gpio.hpp>
 
+#include <soc/gpio_num.h>
+
 #include <memory>
 
 class HCSR04 {
@@ -22,7 +24,7 @@ public:
      * @param trigger_pin
      * @param echo_pin
      */
-    HCSR04(uint32_t trigger_pin, uint32_t echo_pin);
+    HCSR04(gpio_num_t trigger_pin, gpio_num_t echo_pin);
 
     /**
      * @brief Returns distance in cm

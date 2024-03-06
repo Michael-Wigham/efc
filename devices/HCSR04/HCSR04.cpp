@@ -13,7 +13,7 @@
 
 #include <array>
 
-HCSR04::HCSR04(uint32_t trigger_pin, uint32_t echo_pin) {
+HCSR04::HCSR04(gpio_num_t trigger_pin, gpio_num_t echo_pin) {
     m_trigger = GPIO::getGPIO(trigger_pin, OUTPUT);
     m_echo = GPIO::getGPIO(echo_pin, INPUT);
 }

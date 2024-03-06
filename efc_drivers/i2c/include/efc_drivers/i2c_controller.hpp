@@ -38,7 +38,9 @@ public:
      * @param frequency (optional) default to 100000
      * @return I2CController* or nullptr on error
      */
-    static std::shared_ptr<I2CController> get_i2c_controller(uint8_t sda_pin = CONFIG_EFC_DRIVER_I2C_SDA, uint8_t scl_pin = CONFIG_EFC_DRIVER_I2C_SCL, i2c_port_t port = I2C_NUM_0, uint32_t frequency = CONFIG_EFC_DRIVER_I2C_FREQUENCY);
+    static I2CController *get_i2c_controller(uint8_t sda_pin = CONFIG_EFC_DRIVER_I2C_SDA, uint8_t scl_pin = CONFIG_EFC_DRIVER_I2C_SCL, i2c_port_t port = I2C_NUM_0, uint32_t frequency = CONFIG_EFC_DRIVER_I2C_FREQUENCY);
+
+    ~I2CController();
 
     /**
      * @brief Check if the device address is available on the bus
@@ -101,7 +103,7 @@ private:
     i2c_port_t m_port;
     uint32_t m_frequency;
 
-    inline static std::array<std::shared_ptr<I2CController>, I2C_NUM_MAX> m_instances;
+    inline static std::array<I2CController *, I2C_NUM_MAX> m_instances;
 };
 
 #endif // ifndef EFC_I2C_CONTROLLER_HPP

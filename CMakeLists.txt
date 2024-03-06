@@ -8,6 +8,15 @@ list(APPEND EFC_INCLUDE_DIRS
     "efc_common/include"
 )
 
+if(CONFIG_EFC_DRIVER_ADC_ENABLED)
+    list(APPEND EFC_SRCS
+        "efc_drivers/adc/adc.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "efc_drivers/adc/include"
+    )
+endif()
+
 if(CONFIG_EFC_DRIVER_FLASH_ENABLED)
     list(APPEND EFC_SRCS
         "efc_drivers/flash/flash_controller.cpp"
@@ -83,6 +92,8 @@ endif()
 idf_component_register(
     SRCS ${EFC_SRCS}
     INCLUDE_DIRS ${EFC_INCLUDE_DIRS}
-    REQUIRES driver
-    PRIV_REQUIRES driver esp_partition esp_timer
+    REQUIRES driver esp_adc
+    PRIV_REQUIRES driver esp_adc esp_partition esp_timer
 )
+
+target_compile_options(${COMPONENT_LIB} PUBLIC -std=c++23)

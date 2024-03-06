@@ -44,16 +44,16 @@ void gpio_isr_task(void *arg) {
 }
 */
 
-std::shared_ptr<GPIO> GPIO::getGPIO(uint32_t gpio, gpio_pinmode_t pin_mode /* , gpio_intr_mode_t intr */) {
+std::shared_ptr<GPIO> GPIO::getGPIO(gpio_num_t gpio, gpio_pinmode_t pin_mode /* , gpio_intr_mode_t intr */) {
     if (gpio < GPIO_NUM_0 || gpio >= GPIO_NUM_MAX) {
         ESP_LOGE("GPIO", "Invalid gpio pin provided");
         return nullptr;
     }
     if (m_instances[gpio]) {
-        uint32_t i_gpio_pin = m_instances[gpio]->getPin();
+        gpio_num_t i_gpio_pin = m_instances[gpio]->getPin();
         gpio_pinmode_t i_gpio_pin_mode = m_instances[gpio]->getPinMode();
 
-        if (i_gpio_pin == 0) {
+        if (i_gpio_pin == GPIO_NUM_NC) {
             return nullptr;
         } else if (i_gpio_pin == gpio && i_gpio_pin_mode == pin_mode) {
             return m_instances[gpio];
@@ -65,7 +65,7 @@ std::shared_ptr<GPIO> GPIO::getGPIO(uint32_t gpio, gpio_pinmode_t pin_mode /* , 
     }
 }
 
-GPIO::GPIO(uint32_t pin, gpio_pinmode_t pin_mode /* , gpio_intr_mode_t intr */) : m_pin(pin), m_pin_mode(pin_mode) {
+GPIO::GPIO(gpio_num_t pin, gpio_pinmode_t pin_mode /* , gpio_intr_mode_t intr */) : m_pin(pin), m_pin_mode(pin_mode) {
     gpio_config_t conf = {
         .pin_bit_mask = (1ULL << pin),
         .mode = GPIO_MODE_DISABLE,
@@ -84,7 +84,7 @@ GPIO::GPIO(uint32_t pin, gpio_pinmode_t pin_mode /* , gpio_intr_mode_t intr */) 
         conf.pull_down_en = GPIO_PULLDOWN_ENABLE;
     }
     if (gpio_config(&conf) != ESP_OK) {
-        ESP_LOGE("GPIO", "pin %ld failed to configure", pin);
+        ESP_LOGE("GPIO", "pin %" PRIu32 " failed to configure", (uint32_t)pin);
         return;
     }
     /*
