@@ -13,7 +13,7 @@
 #include <efc_drivers/uart_controller.hpp>
 
 UARTController::UARTController(int rx_pin, int tx_pin, char terminator, int baud_rate)
-    : m_uart_id(m_global_uart_id++), m_terminator(terminator) {
+    : m_uart_id(static_cast<uart_port_t>(m_global_uart_id++)), m_terminator(terminator) {
     if (m_uart_id > UART_NUM_MAX - 1) {
         ESP_LOGE("UARTController", "Maximum number of UART ports (%d) exceeded (%d)", m_uart_id + 1, UART_NUM_MAX);
         return;

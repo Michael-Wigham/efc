@@ -103,6 +103,20 @@ menu "EFC Configuration"
         help
             Select this option to use LSM6DSOWTR
 
+        config EFC_DEVICES_BMP388_ENABLED
+            depends on EFC_DRIVER_I2C_ENABLED
+            bool "BMP388"
+            default 0
+            help
+                Select this option to use BMP388
+    
+        config EFC_DEVICES_BMP388_SLAVE_ADDRESS
+            depends on EFC_DEVICES_BMP388_ENABLED
+            hex "BMP388 I2C Address"
+            default 0x77
+            help
+                Select this option to use BMP388
+
         config EFC_DEVICES_HCSR04_ENABLED
         depends on EFC_DRIVER_GPIO_ENABLED
         bool "HCSR04"

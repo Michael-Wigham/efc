@@ -80,6 +80,16 @@ if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
     )
 endif()
 
+
+if(CONFIG_EFC_DEVICES_BMP388_ENABLED)
+    list(APPEND EFC_SRCS
+        "devices/BMP388/BMP388.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "devices/BMP388/include"
+    )
+endif()
+
 if(CONFIG_EFC_DEVICES_TCS3472X_ENABLED)
     list(APPEND EFC_SRCS
         "devices/TCS3472X/TCS3472X.cpp"
