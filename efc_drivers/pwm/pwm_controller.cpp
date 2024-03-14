@@ -21,22 +21,11 @@ PWMController::PWMController(uint32_t timebase_resolution, uint32_t timebase_per
         .clk_src = MCPWM_TIMER_CLK_SRC_DEFAULT,
         .resolution_hz = timebase_resolution,
         .count_mode = MCPWM_TIMER_COUNT_MODE_UP,
-        .period_ticks = timebase_period,
-        .intr_priority = 0,
-        .flags = {
-            .update_period_on_empty = true,
-            .update_period_on_sync = true}};
+        .period_ticks = timebase_period};
 
     mcpwm_operator_config_t operator_config = {
-        .group_id = m_global_group_id++,
-        .intr_priority = 0,
-        .flags = {
-            .update_gen_action_on_tez = true,
-            .update_gen_action_on_tep = true,
-            .update_gen_action_on_sync = true,
-            .update_dead_time_on_tez = true,
-            .update_dead_time_on_tep = true,
-            .update_dead_time_on_sync = true}};
+        .group_id = m_global_group_id
+    };
 
     // Create and connect timer and operator
     ESP_ERROR_CHECK(mcpwm_new_timer(&timer_config, &m_pwm_timer));
@@ -49,20 +38,12 @@ PWMController::PWMController(uint32_t timebase_resolution, uint32_t timebase_per
 std::pair<mcpwm_cmpr_handle_t, mcpwm_gen_handle_t> PWMController::create_config_for_gpio(int gpio) {
     // Comparator and generator config
     mcpwm_comparator_config_t comparator_config = {
-        .intr_priority = 0,
         .flags = {
-            .update_cmp_on_tez = true,
-            .update_cmp_on_tep = true,
-            .update_cmp_on_sync = true}};
+            .update_cmp_on_tez = true}};
 
     mcpwm_generator_config_t generator_config = {
-        .gen_gpio_num = gpio,
-        .flags = {
-            .invert_pwm = false,
-            .io_loop_back = true,
-            .io_od_mode = true,
-            .pull_up = true,
-            .pull_down = true}};
+        .gen_gpio_num = gpio
+    };
 
     // Create comparator and generator
     mcpwm_cmpr_handle_t comparator;

@@ -42,7 +42,7 @@ public:
 
 private:
     // Static configuration
-    inline static uart_port_t m_global_uart_id = UART_NUM_0;
+    inline static int m_global_uart_id = UART_NUM_0;
     inline static const int m_rx_buffer_size = 512;
     inline static const int m_tx_buffer_size = 0;
     inline static const int m_rx_timeout_ms = 0;

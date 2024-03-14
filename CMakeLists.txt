@@ -55,6 +55,15 @@ if(CONFIG_EFC_DEVICES_HCSR04_ENABLED)
     )
 endif()
 
+if(CONFIG_EFC_DEVICES_LIS3MDLTR_ENABLED)
+    list(APPEND EFC_SRCS
+        "devices/LIS3MDLTR/LIS3MDLTR.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "devices/LIS3MDLTR/include"
+    )
+endif()
+
 if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
     list(APPEND EFC_SRCS
         "devices/lsm6dsowtr/lsm6dsowtr.cpp"
@@ -64,9 +73,18 @@ if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
     )
 endif()
 
+if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
+    #[[ list(APPEND EFC_SRCS
+        "devices/lsm6dsowtr/lsm6dsowtr.cpp"
+    ) ]]
+    list(APPEND EFC_INCLUDE_DIRS
+        "devices/servo/include"
+    )
+endif()
+
 idf_component_register(
     SRCS ${EFC_SRCS}
     INCLUDE_DIRS ${EFC_INCLUDE_DIRS}
     REQUIRES driver
-    PRIV_REQUIRES driver esp_partition esp_timer
+    PRIV_REQUIRES driver esp_partition esp_timer esp_rom
 )
