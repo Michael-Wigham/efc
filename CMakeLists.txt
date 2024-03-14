@@ -71,6 +71,15 @@ if(CONFIG_EFC_DEVICES_HCSR04_ENABLED)
     )
 endif()
 
+if(CONFIG_EFC_DEVICES_LIS3MDLTR_ENABLED)
+    list(APPEND EFC_SRCS
+        "devices/LIS3MDLTR/LIS3MDLTR.cpp"
+    )
+    list(APPEND EFC_INCLUDE_DIRS
+        "devices/LIS3MDLTR/include"
+    )
+endif()
+
 if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
     list(APPEND EFC_SRCS
         "devices/lsm6dsowtr/lsm6dsowtr.cpp"
@@ -79,7 +88,6 @@ if(CONFIG_EFC_DEVICES_LSM6DSOWTR_ENABLED)
         "devices/lsm6dsowtr/include"
     )
 endif()
-
 
 if(CONFIG_EFC_DEVICES_BMP388_ENABLED)
     list(APPEND EFC_SRCS

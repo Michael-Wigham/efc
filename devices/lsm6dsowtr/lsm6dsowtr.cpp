@@ -13,15 +13,37 @@
 #include <array>
 #include <memory>
 
+#define BIT(x) (1 << x)
+
 LSM6DSOWTR::LSM6DSOWTR(uint8_t address) : I2CDevice(address) {
-    write_reg(0x10, (uint8_t)0b01000000);
+    // sw reset
+    write_reg(CTRL3_C,  BIT(1));
+    vTaskDelay(pdMS_TO_TICKS(10));
+
+    write_reg(CTRL1_XL, (uint8_t)BIT(6));
+    write_reg(CTRL2_G,  (uint8_t)BIT(6));
 }
 
 int16_t LSM6DSOWTR::read_temperature() {
-    auto [temp] = read_registers<int16_t, 1>(0x20);
+    auto [temp] = read_registers<int16_t, 1>(OUT_TEMP_L);
     return temp;
 }
 
+std::array<int16_t, 3> LSM6DSOWTR::gyro_data() {
+    return read_registers<int16_t, 3>(OUTX_L_G);
+}
+
 std::array<int16_t, 3> LSM6DSOWTR::accel_data() {
-    return read_registers<int16_t, 3>(0x28);
+    return read_registers<int16_t, 3>(OUTX_L_XL);
+}
+
+std::array<int16_t, 1> LSM6DSOWTR::accelx_data() {
+    return read_registers<int16_t, 1>(OUTX_L_XL);
+}
+
+std::array<int16_t, 1> LSM6DSOWTR::accely_data() {
+    return read_registers<int16_t, 1>(OUTY_L_XL);
+}
+std::array<int16_t, 1> LSM6DSOWTR::accelz_data() {
+    return read_registers<int16_t, 1>(OUTZ_L_XL);
 }

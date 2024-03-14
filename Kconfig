@@ -89,6 +89,13 @@ menu "EFC Configuration"
 
     menu "EFC Devices"
 
+        config EFC_DEVICES_LIS3MDLTR_ENABLED
+        depends on EFC_DRIVER_I2C_ENABLED
+        bool "LIS3MDLTR"
+        default 0
+        help
+            Select this option to use LIS3MDLTR
+
         config EFC_DEVICES_LSM6DSOWTR_ENABLED
         depends on EFC_DRIVER_I2C_ENABLED
         bool "LSM6DSOWTR"
