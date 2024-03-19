@@ -90,8 +90,6 @@ class ADC {
 public:
     static ADC *getADC(adc_pins_t pin);
 
-    ~ADC();
-
     uint16_t read();
 
     adc_pins_t getPin() __attribute__((__noinline__)) {

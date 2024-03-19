@@ -36,7 +36,11 @@ ADC *ADC::getADC(adc_pins_t pin) {
     }
 }
 
-ADC::ADC(adc_pins_t pin, adc_unit_t adc_unit, adc_channel_t channel) : m_pin(pin), m_adc_unit(adc_unit), m_channel(channel) {
+ADC::ADC(adc_pins_t pin, adc_unit_t adc_unit, adc_channel_t channel) : m_pin(pin), m_adc_unit(adc_unit), m_channel(channel) {}
+
+uint16_t ADC::read() {
+    int value = 0;
+
     adc_oneshot_chan_cfg_t chan_config = {
         .atten = ADC_ATTEN_DB_12,
         .bitwidth = ADC_BITWIDTH_DEFAULT};
@@ -48,14 +52,10 @@ ADC::ADC(adc_pins_t pin, adc_unit_t adc_unit, adc_channel_t channel) : m_pin(pin
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config, &m_adc_oneshot_handle));
 
     ESP_ERROR_CHECK(adc_oneshot_config_channel(m_adc_oneshot_handle, m_channel, &chan_config));
-}
 
-ADC::~ADC() {
-    ESP_ERROR_CHECK(adc_oneshot_del_unit(m_adc_oneshot_handle));
-}
-
-uint16_t ADC::read() {
-    int value = 0;
     ESP_ERROR_CHECK(adc_oneshot_read(m_adc_oneshot_handle, m_channel, &value));
+
+    ESP_ERROR_CHECK(adc_oneshot_del_unit(m_adc_oneshot_handle));
+
     return value;
 }

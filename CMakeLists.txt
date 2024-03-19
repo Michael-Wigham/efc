@@ -6,6 +6,7 @@ list(APPEND EFC_SRCS
 )
 list(APPEND EFC_INCLUDE_DIRS
     "efc_common/include"
+    "devices/servo/include"
 )
 
 if(CONFIG_EFC_DRIVER_ADC_ENABLED)

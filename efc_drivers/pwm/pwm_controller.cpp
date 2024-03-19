@@ -1,59 +1,51 @@
-/**
- * @file pwm_controller.cpp
- * @author Szymon Wlodarczyk (szymonwlod03@gmail.com)
- * @brief //TODO
- * @date 2023-09-10
- *
- * @copyright Copyright (c) 2023
- *
- */
-
-#include <esp_log.h>
-
-#include <tuple>
-
 #include <efc_drivers/pwm_controller.hpp>
 
-PWMController::PWMController(uint32_t timebase_resolution, uint32_t timebase_period) {
-    // Timer and operator config
-    mcpwm_timer_config_t timer_config = {
-        .group_id = m_global_group_id,
-        .clk_src = MCPWM_TIMER_CLK_SRC_DEFAULT,
-        .resolution_hz = timebase_resolution,
-        .count_mode = MCPWM_TIMER_COUNT_MODE_UP,
-        .period_ticks = timebase_period};
-
-    mcpwm_operator_config_t operator_config = {
-        .group_id = m_global_group_id
-    };
-
-    // Create and connect timer and operator
-    ESP_ERROR_CHECK(mcpwm_new_timer(&timer_config, &m_pwm_timer));
-    ESP_ERROR_CHECK(mcpwm_new_operator(&operator_config, &m_pwm_operator));
-    ESP_ERROR_CHECK(mcpwm_operator_connect_timer(m_pwm_operator, m_pwm_timer));
-    ESP_ERROR_CHECK(mcpwm_timer_enable(m_pwm_timer));
-    ESP_ERROR_CHECK(mcpwm_timer_start_stop(m_pwm_timer, MCPWM_TIMER_START_NO_STOP));
+PWMController *PWMController::get_pwm_controller(gpio_num_t gpio) {
+    for (int i = 0; i < LEDC_CHANNEL_MAX; i++) {
+        if (m_instances[i]) {
+            if (m_instances[i]->m_gpio == gpio) {
+                return m_instances[i];
+            }
+        }
+    }
+    for (int i = 0; i < LEDC_CHANNEL_MAX; i++) {
+        if (m_instances[i] == nullptr) {
+            m_instances[i] = new PWMController(gpio, static_cast<ledc_channel_t>(i));
+            return m_instances[i];
+        }
+    }
+    return nullptr;
 }
 
-std::pair<mcpwm_cmpr_handle_t, mcpwm_gen_handle_t> PWMController::create_config_for_gpio(int gpio) {
-    // Comparator and generator config
-    mcpwm_comparator_config_t comparator_config = {
+PWMController::PWMController(gpio_num_t gpio, ledc_channel_t channel) : m_gpio(gpio), m_channel(channel) {
+    ledc_timer_config_t ledc_timer = {
+        .speed_mode = LEDC_LOW_SPEED_MODE,
+        .duty_resolution = LEDC_TIMER_10_BIT,
+        .timer_num = LEDC_TIMER_0,
+        .freq_hz = 50,
+        .clk_cfg = LEDC_AUTO_CLK};
+
+    ledc_timer_config(&ledc_timer);
+
+    ledc_channel_config_t ledc_ch = {
+        .gpio_num = gpio,
+        .speed_mode = LEDC_LOW_SPEED_MODE,
+        .channel = channel,
+        .intr_type = LEDC_INTR_DISABLE,
+        .timer_sel = LEDC_TIMER_0,
+        .duty = 0,
+        .hpoint = 0,
         .flags = {
-            .update_cmp_on_tez = true}};
+            .output_invert = 0}};
 
-    mcpwm_generator_config_t generator_config = {
-        .gen_gpio_num = gpio
-    };
+    ledc_channel_config(&ledc_ch);
+}
 
-    // Create comparator and generator
-    mcpwm_cmpr_handle_t comparator;
-    mcpwm_gen_handle_t generator;
-    ESP_ERROR_CHECK(mcpwm_new_comparator(m_pwm_operator, &comparator_config, &comparator));
-    ESP_ERROR_CHECK(mcpwm_new_generator(m_pwm_operator, &generator_config, &generator));
+void PWMController::set_duty(uint32_t duty) {
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, m_channel, duty);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, m_channel);
+}
 
-    // Configure comparator events and return config pair
-    ESP_ERROR_CHECK(mcpwm_generator_set_action_on_timer_event(generator, MCPWM_GEN_TIMER_EVENT_ACTION(MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_GEN_ACTION_HIGH)));
-    ESP_ERROR_CHECK(mcpwm_generator_set_action_on_compare_event(generator, MCPWM_GEN_COMPARE_EVENT_ACTION(MCPWM_TIMER_DIRECTION_UP, comparator, MCPWM_GEN_ACTION_LOW)));
-
-    return {comparator, generator};
+uint32_t PWMController::get_duty() {
+    return ledc_get_duty(LEDC_LOW_SPEED_MODE, m_channel);
 }
