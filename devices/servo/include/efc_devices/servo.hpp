@@ -13,7 +13,7 @@
 #include <efc_drivers/pwm_controller.hpp>
 
 #define calc_duty(angle, max_angle, max_width, min_width, freq) \
-    (uint32_t)((float)m_full_duty * (angle / max_angle * (max_width - min_width) + min_width) * freq / (1000000.0f))
+    (uint32_t)((float)m_full_duty * ((float)angle / max_angle * (max_width - min_width) + min_width) * freq / (1000000.0f))
 
 #define calc_angle(duty, max_angle, max_width, min_width, freq) \
     ((float)(((float)duty * ((1000000.0f / (float)m_full_duty) / freq)) - min_width) * (max_angle / (max_width - min_width)))
