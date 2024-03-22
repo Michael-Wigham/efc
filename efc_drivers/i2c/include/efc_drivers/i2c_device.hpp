@@ -54,7 +54,7 @@ public:
         i2c_master_stop(link);
 
         // Send commands to link
-        esp_err_t ret = i2c_master_cmd_begin(m_controller->get_port(), link, 15 / portTICK_PERIOD_MS);
+        esp_err_t ret = i2c_master_cmd_begin(m_controller->get_port(), link, 40 / portTICK_PERIOD_MS);
         i2c_cmd_link_delete(link);
 
         if (ret == ESP_FAIL)

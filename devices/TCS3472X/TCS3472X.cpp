@@ -25,7 +25,7 @@ TCS3472X::TCS3472X(uint8_t address, uint8_t integration_time, tcs3472X_gain_t ga
 
 void TCS3472X::enable() {
     write_reg(TCS3472X_ENABLE, TCS3472X_ENABLE_PON);
-    delay(3);
+    delay(10);
     write_reg(TCS3472X_ENABLE, TCS3472X_ENABLE_PON | TCS3472X_ENABLE_AEN);
     // Set a delay for the integration time
     delay((256 - m_integration_time) * 12 / 5 + 1);
@@ -63,7 +63,7 @@ void TCS3472X::getRawData(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *c) {
     *b = _b;
 
     // Set a delay for the integration time
-    delay((256 - m_integration_time) * 12 / 5 + 1);
+    delay(((256 - m_integration_time) * (12 / 5)) + 1);
 }
 
 void TCS3472X::getRawDataOneShot(uint16_t *r, uint16_t *g, uint16_t *b, uint16_t *c) {
@@ -82,7 +82,7 @@ void TCS3472X::getRGB(float *r, float *g, float *b) {
         return;
     }
 
-    *r = (float)red / sum * 255.0;
-    *g = (float)green / sum * 255.0;
-    *b = (float)blue / sum * 255.0;
+    *r = ((float)red * 255.0) / sum;
+    *g = ((float)green * 255.0) / sum;
+    *b = ((float)blue * 255.0) / sum;
 }

@@ -39,6 +39,7 @@ ADC *ADC::getADC(adc_pins_t pin) {
 ADC::ADC(adc_pins_t pin, adc_unit_t adc_unit, adc_channel_t channel) : m_pin(pin), m_adc_unit(adc_unit), m_channel(channel) {}
 
 uint16_t ADC::read() {
+    esp_err_t err;
     int value = 0;
 
     adc_oneshot_chan_cfg_t chan_config = {
@@ -49,13 +50,25 @@ uint16_t ADC::read() {
         .unit_id = m_adc_unit,
         .ulp_mode = ADC_ULP_MODE_DISABLE};
 
-    ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config, &m_adc_oneshot_handle));
+    err = adc_oneshot_new_unit(&init_config, &m_adc_oneshot_handle);
+    if (err != ESP_OK) {
+        return 0;
+    }
 
-    ESP_ERROR_CHECK(adc_oneshot_config_channel(m_adc_oneshot_handle, m_channel, &chan_config));
+    err = adc_oneshot_config_channel(m_adc_oneshot_handle, m_channel, &chan_config);
+    if (err != ESP_OK) {
+        return 0;
+    }
 
-    ESP_ERROR_CHECK(adc_oneshot_read(m_adc_oneshot_handle, m_channel, &value));
+    err = adc_oneshot_read(m_adc_oneshot_handle, m_channel, &value);
+    if (err != ESP_OK) {
+        return 0;
+    }
 
-    ESP_ERROR_CHECK(adc_oneshot_del_unit(m_adc_oneshot_handle));
+    err = adc_oneshot_del_unit(m_adc_oneshot_handle);
+    if (err != ESP_OK) {
+        return 0;
+    }
 
     return value;
 }

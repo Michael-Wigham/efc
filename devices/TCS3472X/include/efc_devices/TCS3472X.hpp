@@ -7,6 +7,8 @@
  * @copyright Copyright (c) 2024
  */
 
+// EXAMPLE https://github.com/libdriver/tcs34725/blob/master/src/driver_tcs34725.c
+
 #ifndef TCS3472X_HPP
 #define TCS3472X_HPP
 
@@ -97,7 +99,7 @@ typedef enum {
 
 class TCS3472X : I2CDevice {
 public:
-    TCS3472X(uint8_t address = TCS3472X_ADDRESS, uint8_t integration_time = TCS3472X_INTEGRATIONTIME_600MS, tcs3472X_gain_t gain = TCS3472X_GAIN_1X);
+    TCS3472X(uint8_t address = TCS3472X_ADDRESS, uint8_t integration_time = TCS3472X_INTEGRATIONTIME_24MS, tcs3472X_gain_t gain = TCS3472X_GAIN_1X);
 
     void enable();
 
