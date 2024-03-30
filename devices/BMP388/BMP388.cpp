@@ -10,18 +10,19 @@
 #include <efc_devices/BMP388.hpp>
 
 BMP388::BMP388(uint8_t address) : I2CDevice(address) {
-    /* Soft reset */
+    // Soft reset
     write_reg(BMP388_REG_CMD, 0xB6);
 
+    // 10ms delay
     ets_delay_us(10000);
 
     auto [chip_id] = read_registers<uint8_t, 1>(BMP388_REG_CHIP_ID);
     if (chip_id != 0x50) {
-        // Chip id wrong
+        // TODO: Chip id wrong should send error
     }
 
-    /* Setup */
-    auto [osr_reg, odr_reg, pwr_ctrl_reg] = read_registers<uint8_t, 3>(0x1B);
+    // Setup
+    auto [pwr_ctrl_reg] = read_registers<uint8_t, 1>(BMP388_REG_PWR_CTRL);
     write_reg(BMP388_REG_PWR_CTRL, pwr_ctrl_reg | BMP388_MODE_NORMAL_MODE | 0b00000011);
     set_pressure_oversampling(BMP388_OVERSAMPLING_x8);
     set_temperature_oversampling(BMP388_OVERSAMPLING_x1);

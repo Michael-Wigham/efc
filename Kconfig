@@ -116,7 +116,7 @@ menu "EFC Configuration"
             default 0
             help
                 Select this option to use BMP388
-    
+
         config EFC_DEVICES_BMP388_SLAVE_ADDRESS
             depends on EFC_DEVICES_BMP388_ENABLED
             hex "BMP388 I2C Address"
