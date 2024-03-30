@@ -106,7 +106,7 @@ menu "EFC Configuration"
         config EFC_DEVICES_LSM6DSOWTR_SLAVE_ADDRESS
         depends on EFC_DEVICES_LSM6DSOWTR_ENABLED
         hex "LSM6DSOWTR I2C Address"
-        default 0x6B
+        default 0x6A
         help
             Select this option to use LSM6DSOWTR
 

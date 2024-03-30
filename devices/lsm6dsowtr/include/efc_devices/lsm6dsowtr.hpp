@@ -84,13 +84,6 @@ public:
     int16_t read_temperature();
 
     /**
-     * @brief return gx, gy, gz
-     *
-     * @return std::array<int16_t, 3>
-     */
-    std::array<int16_t, 3> gyro_data();
-
-    /**
      * @brief Return x, y, z
      *
      * @return std::array<int16_t, 3>
@@ -100,6 +93,18 @@ public:
     std::array<int16_t, 1> accelx_data();
     std::array<int16_t, 1> accely_data();
     std::array<int16_t, 1> accelz_data();
+
+    /**
+     * @brief return gx, gy, gz
+     *
+     * @return std::array<int16_t, 3>
+     */
+    std::array<int16_t, 3> gyro_data();
+
+    std::array<int16_t, 1> gyrox_data();
+    std::array<int16_t, 1> gyroy_data();
+    std::array<int16_t, 1> gyroz_data();
+
 };
 
 #endif // ifndef EFC_LSM6DSOWTR_HPP
