@@ -1,6 +1,7 @@
 /**
  * @file uart_controller.hpp
  * @author Szymon Wlodarczyk (szymonwlod03@gmail.com)
+ * @author Michael Wigham (michael@wigham.net)
  * @brief //TODO
  * @date 2023-09-10
  *
@@ -36,13 +37,14 @@ public:
     /** //TODO
      * @brief Writes a packet to UART
      *
+     * @param data std::string data
      * @param include_terminator If true will append the terminator to the end of the packet (defaults to true)
      */
-    void write_packet(bool include_terminator = true);
+    void write_packet(std::string data, bool include_terminator = true);
 
 private:
     // Static configuration
-    inline static int m_global_uart_id = UART_NUM_0;
+    inline static int m_global_uart_id = UART_NUM_1;
     inline static const int m_rx_buffer_size = 512;
     inline static const int m_tx_buffer_size = 0;
     inline static const int m_rx_timeout_ms = 0;

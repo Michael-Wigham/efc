@@ -113,7 +113,7 @@ float BMP388::get_temperature() {
     auto [pwr_ctrl_reg] = read_registers<uint8_t, 1>(BMP388_REG_PWR_CTRL);
     if (((pwr_ctrl_reg >> 4) & 0x03) == 0x03) {
         auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-        if ((status_reg & (1 << 6)) != 0) {
+        if ((status_reg & BIT(6)) != 0) {
             int64_t output;
 
             auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
@@ -132,7 +132,7 @@ float BMP388::get_temperature() {
 
         while (1) {
             auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-            if ((status_reg & (1 << 6)) != 0) {
+            if ((status_reg & BIT(6)) != 0) {
                 int64_t output;
 
                 auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
@@ -166,7 +166,7 @@ float BMP388::get_pressure() {
     auto [pwr_ctrl_reg] = read_registers<uint8_t, 1>(BMP388_REG_PWR_CTRL);
     if (((pwr_ctrl_reg >> 4) & 0x03) == 0x03) {
         auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-        if ((status_reg & (1 << 6)) != 0) {
+        if ((status_reg & BIT(6)) != 0) {
             auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
             temperature_yaw = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
             (void)_comp_temperature(temperature_yaw);
@@ -174,11 +174,10 @@ float BMP388::get_pressure() {
             ESP_LOGI("BMP388", "Temperature data not ready to be read");
             return 0;
         }
-        if ((status_reg & (1 << 5)) != 0) {
+        if ((status_reg & BIT(5)) != 0) {
             int64_t output;
 
             auto [data0_reg, data1_reg, data2_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_0);
-            ESP_LOGI("BMP388", "PRESS data %d %d %d", data2_reg, data1_reg, data0_reg);
             uint32_t data = (uint32_t)data2_reg << 16 | (uint32_t)data1_reg << 8 | data0_reg;
             output = _comp_pressure(data);
             return (float)((double)output / 100.0);
@@ -195,7 +194,7 @@ float BMP388::get_pressure() {
 
         while (1) {
             auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-            if ((status_reg & (1 << 6)) != 0) {
+            if ((status_reg & BIT(6)) != 0) {
                 auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
                 temperature_yaw = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
                 (void)_comp_temperature(temperature_yaw);
@@ -209,7 +208,7 @@ float BMP388::get_pressure() {
                 return 0;
             }
             cnt = 5000;
-            if ((status_reg & (1 << 5)) != 0) {
+            if ((status_reg & BIT(5)) != 0) {
                 int64_t output;
 
                 auto [data0_reg, data1_reg, data2_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_0);

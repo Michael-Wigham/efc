@@ -1,6 +1,7 @@
 /**
  * @file uart_controller.hpp
  * @author Szymon Wlodarczyk (szymonwlod03@gmail.com)
+ * @author Michael Wigham (michael@wigham.net)
  * @brief //TODO
  * @date 2023-09-10
  *
@@ -77,9 +78,13 @@ std::optional<std::string> UARTController::read_packet() {
     return {};
 }
 
-void UARTController::write_packet(bool include_terminator) {
+void UARTController::write_packet(std::string data, bool include_terminator) {
     if (!m_is_active) {
         ESP_LOGE("UARTController", "Attempt to write to inactive UART port (%d)", m_uart_id);
         return;
+    }
+    uart_write_bytes(m_uart_id, data.c_str(), data.size());
+    if (include_terminator) {
+        uart_write_bytes(m_uart_id, (const char *)&m_terminator, 1U);
     }
 }

@@ -1,14 +1,6 @@
 set(EFC_SRCS)
 set(EFC_INCLUDE_DIRS)
 
-list(APPEND EFC_SRCS
-    "efc_common/common.cpp"
-)
-list(APPEND EFC_INCLUDE_DIRS
-    "efc_common/include"
-    "devices/servo/include"
-)
-
 if(CONFIG_EFC_DRIVER_ADC_ENABLED)
     list(APPEND EFC_SRCS
         "efc_drivers/adc/adc.cpp"
@@ -19,9 +11,6 @@ if(CONFIG_EFC_DRIVER_ADC_ENABLED)
 endif()
 
 if(CONFIG_EFC_DRIVER_FLASH_ENABLED)
-    list(APPEND EFC_SRCS
-        "efc_drivers/flash/flash_controller.cpp"
-    )
     list(APPEND EFC_INCLUDE_DIRS
         "efc_drivers/flash/include"
     )
@@ -51,6 +40,7 @@ if(CONFIG_EFC_DRIVER_PWM_ENABLED)
     )
     list(APPEND EFC_INCLUDE_DIRS
         "efc_drivers/pwm/include"
+        "devices/servo/include"
     )
 endif()
 
@@ -111,8 +101,8 @@ endif()
 idf_component_register(
     SRCS ${EFC_SRCS}
     INCLUDE_DIRS ${EFC_INCLUDE_DIRS}
-    REQUIRES driver esp_adc esp_timer
-    PRIV_REQUIRES driver esp_adc esp_partition esp_timer
+    REQUIRES driver esp_adc esp_timer fatfs spi_flash
+    PRIV_REQUIRES driver esp_adc esp_partition esp_timer fatfs sdmmc spi_flash
 )
 
 target_compile_options(${COMPONENT_LIB} PUBLIC -std=c++23)

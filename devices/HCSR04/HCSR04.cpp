@@ -9,8 +9,6 @@
 
 #include <efc_devices/HCSR04.hpp>
 
-#include <efc_common/common.hpp>
-
 #include <array>
 
 HCSR04::HCSR04(gpio_num_t trigger_pin, gpio_num_t echo_pin) {
@@ -20,9 +18,9 @@ HCSR04::HCSR04(gpio_num_t trigger_pin, gpio_num_t echo_pin) {
 
 double HCSR04::dist() const {
     m_trigger->write(LOW);
-    delay(2);
+    ets_delay_us(2);
     m_trigger->write(HIGH);
-    delay(10);
+    ets_delay_us(10);
     m_trigger->write(LOW);
     portDISABLE_INTERRUPTS();
     double distance_cm = m_echo->pulseIn(HIGH) * 0.034 / 2;
