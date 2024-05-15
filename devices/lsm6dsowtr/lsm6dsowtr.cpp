@@ -13,8 +13,6 @@
 #include <array>
 #include <memory>
 
-#define BIT(x) (1 << x)
-
 LSM6DSOWTR::LSM6DSOWTR(uint8_t address) : I2CDevice(address) {
     // sw reset
     write_reg(CTRL3_C,  BIT(1));
@@ -31,6 +29,17 @@ int16_t LSM6DSOWTR::read_temperature() {
 
 std::array<int16_t, 3> LSM6DSOWTR::gyro_data() {
     return read_registers<int16_t, 3>(OUTX_L_G);
+}
+
+std::array<int16_t, 1> LSM6DSOWTR::gyrox_data() {
+    return read_registers<int16_t, 1>(OUTX_L_G);
+}
+
+std::array<int16_t, 1> LSM6DSOWTR::gyroy_data() {
+    return read_registers<int16_t, 1>(OUTY_L_G);
+}
+std::array<int16_t, 1> LSM6DSOWTR::gyroz_data() {
+    return read_registers<int16_t, 1>(OUTZ_L_G);
 }
 
 std::array<int16_t, 3> LSM6DSOWTR::accel_data() {

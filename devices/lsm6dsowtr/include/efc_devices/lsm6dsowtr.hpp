@@ -90,6 +90,10 @@ public:
      */
     std::array<int16_t, 3> gyro_data();
 
+    std::array<int16_t, 1> gyrox_data();
+    std::array<int16_t, 1> gyroy_data();
+    std::array<int16_t, 1> gyroz_data();
+
     /**
      * @brief Return x, y, z
      *
