@@ -81,29 +81,31 @@ public:
      *
      * @return int16_t
      */
-    int16_t read_temperature();
+    float read_temperature();
 
     /**
      * @brief return gx, gy, gz
      *
      * @return std::array<int16_t, 3>
      */
-    std::array<int16_t, 3> gyro_data();
-
-    std::array<int16_t, 1> gyrox_data();
-    std::array<int16_t, 1> gyroy_data();
-    std::array<int16_t, 1> gyroz_data();
+    std::array<float, 3> read_gyroscope();
+    float read_gyroscope_x();
+    float read_gyroscope_y();
+    float read_gyroscope_z();
 
     /**
      * @brief Return x, y, z
      *
      * @return std::array<int16_t, 3>
      */
-    std::array<int16_t, 3> accel_data();
+    std::array<float, 3> read_accelerometer();
+    float read_accelerometer_x();
+    float read_accelerometer_y();
+    float read_accelerometer_z();
 
-    std::array<int16_t, 1> accelx_data();
-    std::array<int16_t, 1> accely_data();
-    std::array<int16_t, 1> accelz_data();
+private:
+    float gyroscope_sensitivity = 250.0f;
+    float accelerometer_sensitivity = 9.81f * 2.0f;
 };
 
 #endif // ifndef EFC_LSM6DSOWTR_HPP

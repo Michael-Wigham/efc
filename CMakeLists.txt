@@ -111,7 +111,7 @@ endif()
 idf_component_register(
     SRCS ${EFC_SRCS}
     INCLUDE_DIRS ${EFC_INCLUDE_DIRS}
-    REQUIRES driver esp_adc
+    REQUIRES driver esp_adc esp_timer
     PRIV_REQUIRES driver esp_adc esp_partition esp_timer
 )
 

@@ -39,6 +39,7 @@ public:
         std::array<OutputType, OutputCount> output_bundle;
         uint8_t *output_pointer = reinterpret_cast<uint8_t *>(&output_bundle);
         int byte_count = sizeof(output_bundle);
+        ESP_LOGD("I2C", "Size (B): %i", byte_count);
         i2c_cmd_handle_t link = i2c_cmd_link_create();
 
         // Comm chain
@@ -49,6 +50,7 @@ public:
         i2c_master_start(link);
         i2c_master_write_byte(link, (m_device_address << 1) | EFC_I2C_READ_BIT, EFC_I2C_CHECK_ACK);
         for (int offset = 0; offset < byte_count; offset++) {
+            ESP_LOGD("I2C", "Read into: %p | NACK: %i", (void*)output_pointer, offset == byte_count - 1);
             i2c_master_read_byte(link, output_pointer++, (offset == byte_count - 1) ? I2C_MASTER_NACK : I2C_MASTER_ACK);
         }
         i2c_master_stop(link);
