@@ -10,8 +10,6 @@
 #include <efc_devices/LIS3MDLTR.hpp>
 #include <efc_drivers/i2c_device.hpp>
 
-// #include <ets_sys.h>
-
 #include <array>
 #include <memory>
 
@@ -26,7 +24,7 @@ LIS3MDLTR::LIS3MDLTR(uint8_t address) : I2CDevice(address) {
 
     vTaskDelay(pdMS_TO_TICKS(10));
 
-    write_reg(LIS3MDLTR_CTRL_REG1, (0x01 << 7));
+    write_reg(LIS3MDLTR_CTRL_REG1, (BIT(7)));
 
     // set high quality performance mode xy
     write_reg(LIS3MDLTR_CTRL_REG1, (LIS3MDLTR_ULTRAHIGHMODE << 5));

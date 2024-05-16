@@ -76,6 +76,7 @@ public:
     }
 
     void disable() {
+        delete m_servo_controller;
     }
 
 private:
