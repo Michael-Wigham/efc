@@ -26,12 +26,12 @@
 #define twoKpDef (2.0f * 0.5f) // 2 * proportional gain
 #define twoKiDef (2.0f * 0.0f) // 2 * integral gain
 
-class SF {
+class MadgwickFusion {
     //-------------------------------------------------------------------------------------------
     // Function declarations
 
 public:
-    SF() {
+    MadgwickFusion() {
         beta = betaDef;
         twoKp = twoKpDef;
         twoKi = twoKiDef;
