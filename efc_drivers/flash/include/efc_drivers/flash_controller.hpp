@@ -33,7 +33,7 @@ static std::map<std::string, partitions_info_t> m_partitions;
 template <typename inner_type_t>
 class FlashController {
 public:
-    FlashController(uint32_t capacity, const char *label = "data") : m_mirror_address(0), m_capacity(capacity) {
+    FlashController(uint32_t capacity, const char *label = "data") : m_capacity(capacity) {
         // Find partition to be used
         // BUG: no error handling if partition not found
         esp_partition_t *partition = (esp_partition_t *)esp_partition_find_first(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, label);
@@ -51,45 +51,45 @@ public:
             m_partitions[m_label] = p_info;
         }
 
-        // Claim flash region
+        // Claim flash region (Round to next sector so that there is no overlap between controllers)
         m_head_address = m_partitions[m_label].global_partition_head;
-        m_partitions[m_label].global_partition_head += m_capacity * sizeof(inner_type_t);
-        m_partitions[m_label].global_partition_capacity -= m_capacity * sizeof(inner_type_t);
+        m_tail_address = ((m_head_address + (sizeof(inner_type_t) * m_capacity) - 1 + m_erase_size) / m_erase_size) * m_erase_size;
+        m_region_size = m_tail_address - m_head_address;
+
+        m_partitions[m_label].global_partition_head += m_region_size;
+        m_partitions[m_label].global_partition_capacity -= m_region_size;
+
+        ESP_LOGW("FlashController", "Claimed Flash [ %lu | %lu | %lu ]", m_head_address, m_tail_address, m_region_size);
     }
 
-    FlashController<inner_type_t> &operator[](uint32_t index) {
-        m_mirror_address = m_head_address + (index * sizeof(inner_type_t));
-        return *this;
+    /**
+     * @brief Performs a raw write operation, without checking if the region to be written has been previously flashed.
+     * 
+     * @param data Data to write
+     * @param index Array index to write at
+     */
+    void unchecked_write(inner_type_t data, uint32_t index = 0) {
+        if (index < m_capacity)
+            esp_flash_write(NULL, &data, m_head_address + (index * sizeof(inner_type_t)), sizeof(inner_type_t));
     }
 
-    inner_type_t &operator=(inner_type_t &data) {
-        uint32_t erase_start = (m_mirror_address / m_erase_size) * m_erase_size;
-        uint32_t erase_end = m_erase_size + (((m_mirror_address + sizeof(inner_type_t)) / m_erase_size) * m_erase_size);
-
-        char *region_copy = new char[erase_end - erase_start];
-        esp_flash_read(NULL, region_copy, erase_start, erase_end - erase_start);
-        esp_flash_erase_region(NULL, erase_start, erase_end - erase_start);
-
-        *(inner_type_t *)(region_copy + m_mirror_address - erase_start) = data;
-        esp_flash_write(NULL, region_copy, erase_start, erase_end - erase_start);
-
-        m_mirror_address = 0;
-
-        delete[] region_copy;
-        return data;
+    /**
+     * @brief Performs a raw read operation, without checking for encryption, valid data, or valid address.
+     * 
+     * @param index 
+     * @return Read data 
+     */
+    inner_type_t unchecked_read(uint32_t index = 0) {
+        inner_type_t read_value;
+        esp_flash_read(NULL, &read_value, m_head_address + (index * sizeof(inner_type_t)), sizeof(inner_type_t));
+        return read_value;
     }
 
-    inner_type_t &operator=(inner_type_t &&data) {
-        return operator=(data);
-    }
-
-    operator inner_type_t() {
-        inner_type_t data;
-        esp_flash_read(NULL, &data, m_mirror_address, sizeof(inner_type_t));
-
-        m_mirror_address = 0;
-
-        return data;
+    /**
+     * @brief Erases all flash memory assosiated with this controller
+     */
+    void unchecked_erase() {
+        esp_flash_erase_region(NULL, m_head_address, m_region_size);
     }
 
 private:
@@ -97,11 +97,11 @@ private:
     const char *m_label;
     uint32_t m_erase_size;
 
-    uint32_t m_head_address; // Points to the start of the data partition
-
     // Storage information
-    uint32_t m_mirror_address; // Points to the currently bound data address
-    uint32_t m_capacity;       // Total number of `inner_type_t`'s that can be stored
+    uint32_t m_head_address;    // Points to the start of the data region
+    uint32_t m_tail_address;    // Points to the end of the data region
+    uint32_t m_region_size;     // Size of the data region in bytes
+    uint32_t m_capacity;        // Total number of `inner_type_t`'s that can be stored
 };
 
 #endif // ifndef EFC_FLASH_CONTROLLER_HPP
