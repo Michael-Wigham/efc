@@ -64,7 +64,7 @@ public:
 
     /**
      * @brief Performs a raw write operation, without checking if the region to be written has been previously flashed.
-     * 
+     *
      * @param data Data to write
      * @param index Array index to write at
      */
@@ -75,9 +75,9 @@ public:
 
     /**
      * @brief Performs a raw read operation, without checking for encryption, valid data, or valid address.
-     * 
-     * @param index 
-     * @return Read data 
+     *
+     * @param index
+     * @return Read data
      */
     inner_type_t unchecked_read(uint32_t index = 0) {
         inner_type_t read_value;
@@ -98,10 +98,10 @@ private:
     uint32_t m_erase_size;
 
     // Storage information
-    uint32_t m_head_address;    // Points to the start of the data region
-    uint32_t m_tail_address;    // Points to the end of the data region
-    uint32_t m_region_size;     // Size of the data region in bytes
-    uint32_t m_capacity;        // Total number of `inner_type_t`'s that can be stored
+    uint32_t m_head_address; // Points to the start of the data region
+    uint32_t m_tail_address; // Points to the end of the data region
+    uint32_t m_region_size;  // Size of the data region in bytes
+    uint32_t m_capacity;     // Total number of `inner_type_t`'s that can be stored
 };
 
 #endif // ifndef EFC_FLASH_CONTROLLER_HPP

@@ -67,7 +67,7 @@ menu "EFC Configuration"
         config EFC_DRIVER_I2C_FREQUENCY
             depends on EFC_DRIVER_I2C_ENABLED
             int "EFC I2C Frequency"
-            default 100000
+            default 400000
             help
                 I2C Speed of device.
 

@@ -46,7 +46,7 @@ private:
     // Static configuration
     inline static int m_global_uart_id = UART_NUM_1;
     inline static const int m_rx_buffer_size = 512;
-    inline static const int m_tx_buffer_size = 0;
+    inline static const int m_tx_buffer_size = 512;
     inline static const int m_rx_timeout_ms = 0;
     inline static const int m_event_queue_size = 20;
 

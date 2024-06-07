@@ -105,129 +105,40 @@ void BMP388::set_temperature_oversampling(bmp388_oversampling_t oversampling) {
 }
 
 float BMP388::get_temperature() {
-    auto [fifo_cfg1] = read_registers<uint8_t, 1>(BMP388_REG_FIFO_CONFIG_1);
-    if (((fifo_cfg1 & BIT(0)) != 0) || ((fifo_cfg1 & BIT(4)) != 0)) {
-        ESP_LOGE("BMP388", "fifo mode disabled or no temperature data is stored");
-        return 0;
-    }
-    auto [pwr_ctrl_reg] = read_registers<uint8_t, 1>(BMP388_REG_PWR_CTRL);
-    if (((pwr_ctrl_reg >> 4) & 0x03) == 0x03) {
-        auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-        if ((status_reg & BIT(6)) != 0) {
-            int64_t output;
+    int64_t output;
 
-            auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
-            uint32_t raw_data = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
-            output = _comp_temperature(raw_data);
-            return (float)((double)output / 100.0);
-        }
-        ESP_LOGI("BMP388", "Temperature data not ready to be read");
-        return 0;
-    } else if (((fifo_cfg1 >> 4) & 0x03) == 0x00) {
-        uint16_t cnt = 5000;
-
-        pwr_ctrl_reg &= ~(0x03 << 4); /* clear 4-5 bits */
-        pwr_ctrl_reg |= 0x01 << 4;    /* set bit 4 */
-        write_reg(BMP388_REG_PWR_CTRL, pwr_ctrl_reg);
-
-        while (1) {
-            auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-            if ((status_reg & BIT(6)) != 0) {
-                int64_t output;
-
-                auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
-                uint32_t raw_data = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
-                output = _comp_temperature(raw_data);
-                return (float)((double)output / 100.0);
-            } else {
-                if (cnt != 0) {
-                    cnt--;
-                    ets_delay_us(1000);
-                    continue;
-                }
-                ESP_LOGI("BMP388", "Temperature data not ready to be read");
-                return 0;
-            }
-        }
-    } else {
-        ESP_LOGI("BMP388", "mode is invalid");
-        return 0;
-    }
+    auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
+    uint32_t raw_data = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
+    output = _comp_temperature(raw_data);
+    return (float)((double)output / 100.0);
 }
 
 float BMP388::get_pressure() {
     uint32_t temperature_yaw;
 
-    auto [fifo_cfg1] = read_registers<uint8_t, 1>(BMP388_REG_FIFO_CONFIG_1);
-    if (((fifo_cfg1 & BIT(0)) != 0) || ((fifo_cfg1 & BIT(4)) != 0) || ((fifo_cfg1 & BIT(3)) != 0)) {
-        ESP_LOGE("BMP388", "fifo mode disabled or no temperature or pressure data is stored");
-        return 0;
-    }
-    auto [pwr_ctrl_reg] = read_registers<uint8_t, 1>(BMP388_REG_PWR_CTRL);
-    if (((pwr_ctrl_reg >> 4) & 0x03) == 0x03) {
-        auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-        if ((status_reg & BIT(6)) != 0) {
-            auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
-            temperature_yaw = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
-            (void)_comp_temperature(temperature_yaw);
-        } else {
-            ESP_LOGI("BMP388", "Temperature data not ready to be read");
-            return 0;
-        }
-        if ((status_reg & BIT(5)) != 0) {
-            int64_t output;
+    auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
+    temperature_yaw = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
+    (void)_comp_temperature(temperature_yaw);
+    int64_t output;
 
-            auto [data0_reg, data1_reg, data2_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_0);
-            uint32_t data = (uint32_t)data2_reg << 16 | (uint32_t)data1_reg << 8 | data0_reg;
-            output = _comp_pressure(data);
-            return (float)((double)output / 100.0);
-        } else {
-            ESP_LOGI("BMP388", "Pressure data not ready to be read");
-            return 0;
-        }
-    } else if (((pwr_ctrl_reg >> 4) & 0x03) == 0x00) {
-        uint16_t cnt = 5000;
+    auto [data0_reg, data1_reg, data2_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_0);
+    uint32_t data = (uint32_t)data2_reg << 16 | (uint32_t)data1_reg << 8 | data0_reg;
+    output = _comp_pressure(data);
+    return (float)((double)output / 100.0);
+}
 
-        pwr_ctrl_reg &= ~(0x03 << 4);
-        pwr_ctrl_reg |= 0x01 << 4;
-        write_reg(BMP388_REG_PWR_CTRL, pwr_ctrl_reg);
+std::array<float, 2>  BMP388::get_data() {
+    uint32_t raw_temp;
 
-        while (1) {
-            auto [status_reg] = read_registers<uint8_t, 1>(BMP388_REG_STATUS);
-            if ((status_reg & BIT(6)) != 0) {
-                auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
-                temperature_yaw = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
-                (void)_comp_temperature(temperature_yaw);
-            } else {
-                if (cnt != 0) {
-                    cnt--;
-                    ets_delay_us(1000);
-                    continue;
-                }
-                ESP_LOGI("BMP388", "Temperature data not ready to be read");
-                return 0;
-            }
-            cnt = 5000;
-            if ((status_reg & BIT(5)) != 0) {
-                int64_t output;
+    auto [data3_reg, data4_reg, data5_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_3);
+    raw_temp = (uint32_t)data5_reg << 16 | (uint32_t)data4_reg << 8 | data3_reg;
+   int64_t temp = _comp_temperature(raw_temp);
 
-                auto [data0_reg, data1_reg, data2_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_0);
-                uint32_t data = (uint32_t)data2_reg << 16 | (uint32_t)data1_reg << 8 | data0_reg;
-                output = _comp_pressure(data);
-                return (float)((double)output / 100.0);
-            } else {
-                if (cnt != 0) {
-                    cnt--;
-                    ets_delay_us(1000);
-                    continue;
-                }
-                ESP_LOGI("BMP388", "Temperature data not ready to be read");
-                return 0;
-            }
-        }
-    }
-    ESP_LOGI("BMP388", "mode is invalid");
-    return 0;
+    int64_t output;
+    auto [data0_reg, data1_reg, data2_reg] = read_registers<uint8_t, 3>(BMP388_REG_DATA_0);
+    uint32_t data = (uint32_t)data2_reg << 16 | (uint32_t)data1_reg << 8 | data0_reg;
+    output = _comp_pressure(data);
+    return {(float)((double)output / 100.0), (float)((double)temp / 100.0)};
 }
 
 int64_t BMP388::_comp_temperature(uint32_t data) {

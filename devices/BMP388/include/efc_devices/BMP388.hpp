@@ -122,6 +122,8 @@ public:
 
     float get_pressure();
 
+    std::array<float, 2>  get_data();
+
 private:
     uint16_t m_t1;
     uint16_t m_t2;
