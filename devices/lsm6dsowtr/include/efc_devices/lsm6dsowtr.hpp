@@ -19,11 +19,10 @@
 #define SENSOR_SYNC_TIME_FRAME_REG 0x04     // Sensor sync configuration register
 #define SENSOR_SYNC_RES_RATIO_REG 0x05      // Sensor synchronization resolution ratio
 
-#define FIFO_CTRL1_REG 0x06                 // FIFO control register
-#define FIFO_CTRL2_REG 0x07                 // FIFO control register
-#define FIFO_CTRL3_REG 0x08                 // FIFO control register
-#define FIFO_CTRL4_REG 0x09                 // FIFO control register
-#define FIFO_CTRL5_REG 0x0A                 // FIFO control register
+#define FIFO_CTRL1_REG 0x07                 // FIFO control register
+#define FIFO_CTRL2_REG 0x08                 // FIFO control register
+#define FIFO_CTRL3_REG 0x09                 // FIFO control register
+#define FIFO_CTRL4_REG 0x0A                 // FIFO control register
 
 #define DRDY_PULSE_CFG_G_REG 0x0B           // DataReady configuration register
 
@@ -70,7 +69,14 @@
 #define OUTZ_L_XL 0x2C                      // Linear acceleration sensor Z-axis output register (r). The value is expressed as a 16-bit word in two’s complement.
 #define OUTZ_H_XL 0x2D                      // Linear acceleration sensor Z-axis output register (r). The value is expressed as a 16-bit word in two’s complement.
 
-
+// FIFO registers
+#define FIFO_DATA_OUT_TAG 0x78
+#define FIFO_DATA_OUT_X_L 0x79
+#define FIFO_DATA_OUT_X_H 0x7A
+#define FIFO_DATA_OUT_Y_L 0x7B
+#define FIFO_DATA_OUT_Y_H 0x7C
+#define FIFO_DATA_OUT_Z_L 0x7D
+#define FIFO_DATA_OUT_Z_H 0x7E
 
 class LSM6DSOWTR : I2CDevice {
 public:
@@ -102,6 +108,8 @@ public:
     float read_accelerometer_x();
     float read_accelerometer_y();
     float read_accelerometer_z();
+    std::array<float, 3> read_fifo_data();
+    uint8_t read_fifo_tag();
 
 private:
     float gyroscope_sensitivity = 250.0f;
